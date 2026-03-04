@@ -24,17 +24,15 @@ const updateContact = async (contactId, newData, options = {}) => {
     const result = await Contacts.findOneAndUpdate(
         { _id: contactId },
         { $set: newData },
-        { includeResultMetadata: true },
-        { new: true, ...options }
+        { includeResultMetadata: true, new: true, ...options }
     );
     if (result.value) {
         return {
             contact: result.value,
             isNew: Boolean(result.lastErrorObject.upserted),
         }
-  };
-        return null;
-
+    };
+    return null;
 };
 
 export { getContacts, getContactsById, addContact, deleteContactById, updateContact };
