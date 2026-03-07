@@ -1,0 +1,19 @@
+import Joi from "joi";
+
+const stringField = Joi.string().min(3).max(20);
+
+export const createContactSchema = Joi.object({
+  name: stringField.required(),
+  phoneNumber: stringField.required(),
+  email: stringField.optional(),
+  isFavourite: Joi.boolean().optional(),
+  contactType: Joi.string().valid("work", "home", "personal").optional(),
+});
+
+export const updateContactSchema = Joi.object({
+  name: stringField.optional(),
+  phoneNumber: stringField.optional(),
+  email: stringField.optional(),
+  isFavourite: Joi.boolean().optional(),
+  contactType: Joi.string().valid("work", "home", "personal").optional(),
+});

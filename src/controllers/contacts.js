@@ -1,8 +1,18 @@
 import createHttpError from 'http-errors';
 import { getContacts, getContactsById, addContact, deleteContactById, updateContact} from '../services/contacts.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
+import { parseFilterParams } from '../utils/parseFilterParams.js';
+
 
 export const getContactsController = async (req, res) => {
-    const contacts = await getContacts();
+    const queryParams = req.query;
+    
+    const { page, perPage } = parsePaginationParams(queryParams);
+    const { sortBy, sortOrder } = parseSortParams(queryParams);
+    const filter = parseFilterParams(queryParams);
+
+    const contacts = await getContacts({ page, perPage, sortBy, sortOrder, filter });
     res.status(200).send({
         message: 'Contacts found',
         status: 200,
@@ -13,6 +23,7 @@ export const getContactsController = async (req, res) => {
 export const getContactsByIdController = async (req, res) => {
     const { contactId } = req.params;
     const contact = await getContactsById(contactId);
+
     if (!contact) {
         throw createHttpError(404, 'Contact not found');
     }
@@ -26,13 +37,13 @@ export const getContactsByIdController = async (req, res) => {
 
 export const addContactController = async (req, res) => {
     const newContact = req.body;
-
-    const createdContact = await addContact(newContact); 
+    const createdContact = await addContact(newContact);
     res.status(201).send({
-        message: 'Contact added',
+        message: 'Contact created',
         status: 201,
         data: createdContact,
     });
+
 };
 
 export const deleteContactController = async (req, res) => {
@@ -41,11 +52,7 @@ export const deleteContactController = async (req, res) => {
     if (!deletedContact) {
         throw createHttpError(404, 'Contact not found');
     }
-    res.status(200).send({
-        message: 'Contact deleted',
-        status: 200,
-        data: deletedContact,
-    });
+    res.status(204).send();
 };
 
 export const updatePutContactController = async (req, res) => {
