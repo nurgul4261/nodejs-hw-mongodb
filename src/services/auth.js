@@ -23,7 +23,7 @@ export const loginUser = async (userData) => {
 
     const user = await UsersCollection.findOne({ email });
     if (!user) {
-        throw createHttpError(404, "User not found");
+        throw createHttpError(401, "Unauthorized");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -84,3 +84,15 @@ export const refreshUser = async (refreshToken, sessionId) => {
     return sessionNew;
 };
 
+export const requestResetEmail = async (email) => {
+    const user = await UsersCollection.findOne({ email });
+    if (!user) {
+        throw createHttpError(404, "User not found");
+    }
+    const resetToken = randomBytes(30).toString("base64");
+    const resetTokenValidUntil = new Date(Date.now() + FIFTEEN_MINUTES_IN_MS);
+    user.resetToken = resetToken;
+    user.resetTokenValidUntil = resetTokenValidUntil;
+    await user.save();
+    return resetToken;
+};
