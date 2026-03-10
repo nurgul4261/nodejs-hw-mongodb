@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import UsersCollection from "../db/models/users.js";
 import SessionsCollection from "../db/models/sessions.js";
 import { randomBytes } from "node:crypto";
-import { FIFTEEN_MINUTES_IN_MS, ONE_DAY_IN_MS } from "../constants/index.js";
+import { FIFTEEN_MINUTES_IN_MS, THIRTY_DAYS_IN_MS } from "../constants/index.js";
 
 export const registerUser = async (userData) => {
     const { email, password } = userData;
@@ -36,7 +36,7 @@ export const loginUser = async (userData) => {
     const accessToken = randomBytes(30).toString("base64");
     const refreshToken = randomBytes(30).toString("base64");
     const accessTokenValidUntil = new Date(Date.now() + FIFTEEN_MINUTES_IN_MS);
-    const refreshTokenValidUntil = new Date(Date.now() + ONE_DAY_IN_MS);
+    const refreshTokenValidUntil = new Date(Date.now() + THIRTY_DAYS_IN_MS);
 
     const session = await SessionsCollection.create({
         userId: user._id,
@@ -55,8 +55,6 @@ export const logoutUser = async (sessionId) => {
 };
 
 export const refreshUser = async (refreshToken, sessionId) => {
-
-
     const session = await SessionsCollection.findById(sessionId);
 
     if (!session) {
@@ -65,11 +63,14 @@ export const refreshUser = async (refreshToken, sessionId) => {
     if (session.refreshTokenValidUntil < new Date()) {
         throw createHttpError(401, "Refresh token expired");
     }
+    if (session.refreshToken !== refreshToken) {
+        throw createHttpError(401, "Refresh token is invalid");
+    }
 
     const accessTokenNew = randomBytes(30).toString("base64");
     const refreshTokenNew = randomBytes(30).toString("base64");
     const accessTokenValidUntilNew = new Date(Date.now() + FIFTEEN_MINUTES_IN_MS);
-    const refreshTokenValidUntilNew = new Date(Date.now() + ONE_DAY_IN_MS);
+    const refreshTokenValidUntilNew = new Date(Date.now() + THIRTY_DAYS_IN_MS);
 
     const sessionNew = await SessionsCollection.create({
         userId: session.userId,
