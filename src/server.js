@@ -7,6 +7,7 @@ import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import authRouter from './routers/auth.js';
 import cookieParser from 'cookie-parser';
+import { UPLOAD_FOLDER } from './constants/index.js';
 
 dotenv.config();
 
@@ -19,7 +20,11 @@ export const createServer = () => {
   app.use(cookieParser());
   app.use(express.json({
     limit: '1mb',
-  }));
+  })
+  );
+
+  app.use("/uploads", express.static(UPLOAD_FOLDER));
+
   app.use(
     pinoHttp({
       transport: {

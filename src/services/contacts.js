@@ -8,12 +8,13 @@ const getContacts = async ({
     sortBy = DEFAULT_PAGINATION_VALUES.sortBy,
     sortOrder = DEFAULT_PAGINATION_VALUES.sortOrder,
     filter = {},
+    userId,
 } = {}) => {
  
     const skip = (page - 1) * perPage;
     const limit = perPage;
     
-    const contactQuery = Contacts.find();
+    const contactQuery = Contacts.find({ userId });
 
     if (filter.contactType) {
         contactQuery.where('contactType').equals(filter.contactType);
@@ -24,13 +25,13 @@ const getContacts = async ({
     }
 
     const [totalCount, contacts] = await Promise.all([
-    Contacts.find().merge(contactQuery).countDocuments(),
-    contactQuery
-      .skip(skip)
-      .limit(limit)
-      .sort({ [sortBy]: sortOrder })
-      .exec(),
-  ]);
+        Contacts.find({ userId }).merge(contactQuery).countDocuments(),
+        contactQuery
+            .skip(skip)
+            .limit(limit)
+            .sort({ [sortBy]: sortOrder })
+            .exec(),
+    ]);
 
     const pagination = calculatePaginationData(totalCount, page, perPage);
 
@@ -40,8 +41,8 @@ const getContacts = async ({
     };
 };
 
-const getContactsById = async (contactId) => {
-    const contact = await Contacts.findById(contactId);
+const getContactsById = async (contactId, userId) => {
+    const contact = await Contacts.findOne({ _id: contactId, userId });
     return contact;
 };
 
@@ -50,14 +51,14 @@ const addContact = async (contact) => {
     return newContact;
 };
 
-const deleteContactById = async (contactId) => {
-    const deletedContact = await Contacts.findOneAndDelete({ _id: contactId });
+const deleteContactById = async (contactId, userId) => {
+    const deletedContact = await Contacts.findOneAndDelete({ _id: contactId, userId });
     return deletedContact;
 };
 
-const updateContact = async (contactId, newData, options = {}) => {
+const updateContact = async (contactId, userId, newData, options = {}) => {
     const result = await Contacts.findOneAndUpdate(
-        { _id: contactId },
+        { _id: contactId, userId },
         { $set: newData },
         { includeResultMetadata: true, new: true, ...options }
     );
