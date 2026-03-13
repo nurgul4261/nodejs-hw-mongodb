@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { TEMP_FOLDER, UPLOAD_FOLDER } from "../constants/index.js";
+import { env } from '../utils/env.js';
 
 export const saveFileToUploadDir = async (file) => {
     await fs.rename(
@@ -8,5 +9,5 @@ export const saveFileToUploadDir = async (file) => {
         path.join(UPLOAD_FOLDER, file.filename)
     );
 
-    return `${process.env.APP_DOMAIN}/uploads/${file.filename}`;
+    return `${env('APP_DOMAIN')}/uploads/${file.filename}`;
 }

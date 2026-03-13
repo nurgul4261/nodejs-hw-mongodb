@@ -8,6 +8,7 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import authRouter from './routers/auth.js';
 import cookieParser from 'cookie-parser';
 import { UPLOAD_FOLDER } from './constants/index.js';
+import { env } from './utils/env.js';
 
 dotenv.config();
 
