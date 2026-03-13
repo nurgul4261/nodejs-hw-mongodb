@@ -3,6 +3,8 @@ import { createUserSchema, loginUserSchema, requestResetEmailSchema, resetPasswo
 import { registerUserController, loginUserController, logoutUserController, refreshUserController, requestResetEmailController, resetPasswordController } from "../controllers/auth.js";
 import { validateBody } from "../middlewares/validateBody.js";
 import { ctrlWrapper } from "../utils/ctrlWrapper.js";
+import { getGoogleAuthUrlController } from "../controllers/auth.js";
+
 
 const authRouter = Router();
 
@@ -38,6 +40,11 @@ authRouter.post(
     "/reset-pwd",
     validateBody(resetPasswordSchema),
     ctrlWrapper(resetPasswordController)
+);
+
+authRouter.get(
+    "/google-url",
+    ctrlWrapper(getGoogleAuthUrlController)
 );
 
 export default authRouter;
