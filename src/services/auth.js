@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import path from "node:path";
 import fs from "node:fs/promises";
 import handlebars from "handlebars";
+import { env } from "../utils/env.js";
 
 const TEMPLATE_DIR = path.join(process.cwd(), "src", "templates");
 
@@ -102,7 +103,7 @@ export const requestResetEmail = async (email) => {
             sub: user._id,
             email: user.email,
         },
-        process.env.JWT_SECRET,
+        env('JWT_SECRET'),
         { expiresIn: "5m" }
     );
 
@@ -112,12 +113,12 @@ export const requestResetEmail = async (email) => {
 
     const htmlContent = template({ 
         name: user.name, 
-        url: `${process.env.APP_DOMAIN}/reset-password?token=${resetToken}`,
+        resetLink: `${env('APP_DOMAIN')}/reset-password?token=${resetToken}`,
     });
 
     try {
         await sendMail({
-            from: process.env.SMTP_FROM,
+            from: env('SMTP_FROM'),
             to: user.email,
             subject: "Password Reset Request",
             html: htmlContent,
@@ -130,7 +131,7 @@ export const requestResetEmail = async (email) => {
 export const resetPassword = async (token, newPassword) => {
     let decodedToken;
     try {
-        decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        decodedToken = jwt.verify(token, env('JWT_SECRET'));
     } catch (error) {
         throw createHttpError(401, "Token is expired or invalid.");
     }
