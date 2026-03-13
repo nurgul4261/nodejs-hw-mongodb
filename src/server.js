@@ -11,7 +11,7 @@ import { UPLOAD_FOLDER } from './constants/index.js';
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || env('PORT') || 3000;
 
 export const createServer = () => {
   const app = express();
