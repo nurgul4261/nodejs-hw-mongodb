@@ -8,7 +8,7 @@ const googleOAuthClient = new OAuth2Client({
     redirectUri: env("GOOGLE_REDIRECT_URI"),
 });
 
-export const generateAuthUrl = () => {
+export const generateGoogleAuthUrl = () => {
     return googleOAuthClient.generateAuthUrl({
         scope: [
             "https://www.googleapis.com/auth/userinfo.profile",
@@ -16,3 +16,27 @@ export const generateAuthUrl = () => {
         ],
     });
 }
+
+export const validateCode = async (code) => {
+    const response = await googleOAuthClient.getToken(code);
+
+    if (!response.tokens) {
+        throw new Error("Invalid code");
+    }
+
+    const idToken = response.tokens.id_token;
+
+    const ticket = await googleOAuthClient.verifyIdToken({
+        idToken,
+    });
+
+    const payload = ticket.getPayload();
+
+    const name = `${payload.given_name} ${payload.family_name}`;
+    const email = payload.email;
+
+    return {
+        name,
+        email
+    };
+};

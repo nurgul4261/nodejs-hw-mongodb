@@ -3,7 +3,7 @@ import { createUserSchema, loginUserSchema, requestResetEmailSchema, resetPasswo
 import { registerUserController, loginUserController, logoutUserController, refreshUserController, requestResetEmailController, resetPasswordController } from "../controllers/auth.js";
 import { validateBody } from "../middlewares/validateBody.js";
 import { ctrlWrapper } from "../utils/ctrlWrapper.js";
-import { getGoogleAuthUrlController } from "../controllers/auth.js";
+import { getGoogleAuthUrlController, googleAuthController } from "../controllers/auth.js";
 
 
 const authRouter = Router();
@@ -45,6 +45,11 @@ authRouter.post(
 authRouter.get(
     "/google-url",
     ctrlWrapper(getGoogleAuthUrlController)
+);
+
+authRouter.get(
+    "/google",
+    ctrlWrapper(googleAuthController)
 );
 
 export default authRouter;
