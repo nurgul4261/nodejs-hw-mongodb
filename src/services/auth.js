@@ -10,6 +10,7 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import handlebars from "handlebars";
 import { env } from "../utils/env.js";
+import { validateCode } from "../utils/googleOAuth.js";
 
 const TEMPLATE_DIR = path.join(process.cwd(), "src", "templates");
 
@@ -147,5 +148,38 @@ export const resetPassword = async (token, newPassword) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await UsersCollection.findByIdAndUpdate(userId, { password: hashedPassword });
+
     await SessionsCollection.deleteMany({ userId });
 };
+
+export const loginOrRegisterUserWithGoogle = async (code) => {
+    const userFromGoogle = await validateCode(code);
+
+    let user = await UsersCollection.findOne({ email: userFromGoogle.email });
+
+    if (!user) {
+        user = await UsersCollection.create({
+            name: userFromGoogle.name,
+            email: userFromGoogle.email,
+            password: null,
+        });
+    }
+
+     await SessionsCollection.deleteMany({ userId: user._id });
+
+    const accessToken = randomBytes(30).toString("base64");
+    const refreshToken = randomBytes(30).toString("base64");
+    const accessTokenValidUntil = new Date(Date.now() + FIFTEEN_MINUTES_IN_MS);
+    const refreshTokenValidUntil = new Date(Date.now() + THIRTY_DAYS_IN_MS);
+
+    const session = await SessionsCollection.create({
+        userId: user._id,
+        accessToken,
+        refreshToken,
+        accessTokenValidUntil,
+        refreshTokenValidUntil,
+    });
+
+    return session;
+};
+

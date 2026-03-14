@@ -1,0 +1,30 @@
+openapi: 3.0.0
+
+info:
+  title: Contacts API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /contacts:
+    get:
+      $ref: ../swagger/paths/contacts/get.yaml
+    post:
+      $ref: ../swagger/paths/contacts/post.yaml
+
+  /contacts/{contactId}:
+    get:
+      $ref: ../swagger/paths/contacts/{id}/get.yaml
+
+components:
+  schemas:
+    Contact:
+      $ref: ../swagger/components/schemas/contact.yaml
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

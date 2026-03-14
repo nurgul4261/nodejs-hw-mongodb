@@ -9,3 +9,5 @@ export const USER_ROLES = {
 
 export const TEMP_FOLDER = path.join(process.cwd(), "temp");
 export const UPLOAD_FOLDER = path.join(process.cwd(), "uploads");
+
+export const SWAGGER_PATH = path.join(process.cwd(), 'docs', 'swagger.json');

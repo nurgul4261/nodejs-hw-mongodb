@@ -9,6 +9,7 @@ import authRouter from './routers/auth.js';
 import cookieParser from 'cookie-parser';
 import { UPLOAD_FOLDER } from './constants/index.js';
 import { env } from './utils/env.js';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 dotenv.config();
 
@@ -25,6 +26,8 @@ export const createServer = () => {
   );
 
   app.use("/uploads", express.static(UPLOAD_FOLDER));
+
+  app.use('/api-docs', swaggerDocs());
 
   app.use(
     pinoHttp({
