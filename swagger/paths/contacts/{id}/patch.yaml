@@ -1,0 +1,21 @@
+summary: Update a contact
+operationId: patchContact
+security:
+  - bearerAuth: []
+parameters:
+  - name: contactId
+    in: path
+    required: true
+    schema:
+      type: string
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../../components/schemas/contact.yaml
+responses:
+  '200':
+    description: Contact updated successfully
+  '404':
+    description: Contact not found
