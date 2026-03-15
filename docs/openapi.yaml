@@ -3,9 +3,22 @@ openapi: 3.0.0
 info:
   title: Contacts API
   version: 1.0.0
+  description: |
+    REST API for managing contacts. Supports creating, listing, and retrieving contact records.
+    Authentication is handled via Bearer JWT tokens.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
+  - url: https://api.yoursite.com
+    description: Production
   - url: http://localhost:3000
+    description: Local development
+
+tags:
+  - name: Contacts
+    description: Operations related to contact management
 
 paths:
   /contacts:
@@ -17,6 +30,10 @@ paths:
   /contacts/{contactId}:
     get:
       $ref: ../swagger/paths/contacts/{id}/get.yaml
+    patch:
+      $ref: ../swagger/paths/contacts/{id}/patch.yaml
+    delete:
+      $ref: ../swagger/paths/contacts/{id}/delete.yaml
 
 components:
   schemas:
